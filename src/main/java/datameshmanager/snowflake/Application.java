@@ -2,6 +2,8 @@ package datameshmanager.snowflake;
 
 import datameshmanager.sdk.DataMeshManagerAssetsSynchronizer;
 import datameshmanager.sdk.DataMeshManagerClient;
+import datameshmanager.sdk.DataMeshManagerEventListener;
+import datameshmanager.sdk.DataMeshManagerStateRepositoryRemote;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,11 +34,26 @@ public class Application {
   @Bean
   public ApiClient snowflakeApiClient(SnowflakeProperties snowflakeProperties) {
     ApiClient snowflakeApiClient = new ApiClient();
-    snowflakeApiClient.setBasePath("https://%s.snowflakecomputing.com".formatted(snowflakeProperties.account()));
     snowflakeApiClient.addDefaultHeader("X-Snowflake-Authorization-Token-Type", "KEYPAIR_JWT");
+    snowflakeApiClient.setBasePath("https://%s.snowflakecomputing.com".formatted(snowflakeProperties.account()));
+    snowflakeApiClient.setBearerToken(new BearerTokenSupplier(snowflakeProperties));
     return snowflakeApiClient;
   }
 
+  @Bean(destroyMethod = "stop")
+  @ConditionalOnProperty(value = "datameshmanager.client.snowflake.accessmanagement.enabled", havingValue = "true")
+  public DataMeshManagerEventListener dataMeshManagerEventListener(
+      DataMeshManagerClient client,
+      SnowflakeProperties snowflakeProperties,
+      ApiClient snowflakeApiClient,
+      TaskExecutor taskExecutor) {
+    var agentId = snowflakeProperties.accessmanagement().agentid();
+    var eventHandler = new SnowflakeAccessManagementHandler(client, snowflakeApiClient);
+    var stateRepository = new DataMeshManagerStateRepositoryRemote(agentId, client);
+    var dataMeshManagerEventListener = new DataMeshManagerEventListener(agentId, client, eventHandler, stateRepository);
+    taskExecutor.execute(dataMeshManagerEventListener::start);
+    return dataMeshManagerEventListener;
+  }
 
   @Bean(destroyMethod = "stop")
   @ConditionalOnProperty(value = "datameshmanager.client.snowflake.assets.enabled", havingValue = "true")

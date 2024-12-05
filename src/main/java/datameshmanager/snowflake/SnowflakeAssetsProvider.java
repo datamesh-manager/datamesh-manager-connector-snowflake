@@ -1,33 +1,23 @@
 package datameshmanager.snowflake;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import datameshmanager.sdk.DataMeshManagerAssetsProvider;
 import datameshmanager.sdk.client.model.Asset;
 import datameshmanager.sdk.client.model.AssetColumnsInner;
 import datameshmanager.sdk.client.model.AssetInfo;
-import java.security.spec.RSAPublicKeySpec;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import snowflake.client.ApiClient;
 import snowflake.client.api.DatabaseApi;
-import java.io.File;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.security.KeyFactory;
-import java.security.MessageDigest;
-import java.security.interfaces.RSAPrivateCrtKey;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
 import snowflake.client.api.SchemaApi;
 import snowflake.client.api.TableApi;
 import snowflake.client.api.ViewApi;
-import snowflake.client.model.Database;
-import snowflake.client.model.SchemaInfo;
-import snowflake.client.model.Table;
-import snowflake.client.model.View;
+import snowflake.client.model.database.Database;
+import snowflake.client.model.schema.SchemaInfo;
+import snowflake.client.model.table.Table;
+import snowflake.client.model.view.View;
 
 public class SnowflakeAssetsProvider implements DataMeshManagerAssetsProvider {
 
@@ -43,14 +33,6 @@ public class SnowflakeAssetsProvider implements DataMeshManagerAssetsProvider {
 
   @Override
   public void fetchAssets(AssetCallback assetCallback) {
-    String account = snowflakeProperties.account();
-    String user = snowflakeProperties.user();
-    File privateKeyFile = snowflakeProperties.privatekeyfile();
-
-    log.info("Generating JWT token for account {} and user {}", account, user);
-    String bearerToken = generateJWT(account, user, privateKeyFile);
-    snowflakeApiClient.setBearerToken(bearerToken);
-
     log.info("Calling Snowflake REST API to fetch databases");
     DatabaseApi databaseApi = new DatabaseApi(snowflakeApiClient);
     List<Database> databases = databaseApi.listDatabases(null, null, null, null, null);
@@ -64,7 +46,6 @@ public class SnowflakeAssetsProvider implements DataMeshManagerAssetsProvider {
 
       var schemaApi = new SchemaApi(snowflakeApiClient);
       var schemas = schemaApi.listSchemas(database.getName(), null, null, null, null, true);
-
 
       for (var schema : schemas) {
         if (!includeSchema(schema)) {
@@ -116,7 +97,7 @@ public class SnowflakeAssetsProvider implements DataMeshManagerAssetsProvider {
         .info(new AssetInfo()
             .name(schema.getName())
             .source("snowflake")
-            .qualifiedName(schema.getDatabaseName()+"."+schema.getName())
+            .qualifiedName(schema.getDatabaseName() + "." + schema.getName())
             .type("snowflake_schema")
             .status("active")
             .description(schema.getComment()))
@@ -142,7 +123,7 @@ public class SnowflakeAssetsProvider implements DataMeshManagerAssetsProvider {
         .info(new AssetInfo()
             .name(table.getName())
             .source("snowflake")
-            .qualifiedName(table.getDatabaseName()+"."+table.getSchemaName()+"."+table.getName())
+            .qualifiedName(table.getDatabaseName() + "." + table.getSchemaName() + "." + table.getName())
             .type("snowflake_table")
             .status("active")
             .description(table.getComment()))
@@ -178,7 +159,7 @@ public class SnowflakeAssetsProvider implements DataMeshManagerAssetsProvider {
         .info(new AssetInfo()
             .name(view.getName())
             .source("snowflake")
-            .qualifiedName(view.getDatabaseName()+"."+view.getSchemaName()+"."+view.getName())
+            .qualifiedName(view.getDatabaseName() + "." + view.getSchemaName() + "." + view.getName())
             .type("snowflake_view")
             .status("active")
             .description(view.getComment()))
@@ -237,61 +218,9 @@ public class SnowflakeAssetsProvider implements DataMeshManagerAssetsProvider {
   protected boolean includeTable(Table table) {
     return true;
   }
+
   protected boolean includeView(View view) {
     return true;
-  }
-
-  public static String generateJWT(String account, String user, File privateKeyFile) {
-    try {
-      var privateKey = readPrivateKey(privateKeyFile);
-      RSAPublicKeySpec publicKeySpec =
-          new RSAPublicKeySpec(privateKey.getModulus(), privateKey.getPublicExponent());
-      KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-      RSAPublicKey publicKey = (RSAPublicKey) keyFactory.generatePublic(publicKeySpec);
-      Algorithm algorithm = Algorithm.RSA256(publicKey, privateKey);
-
-      var qualifiedUserName =
-          account.toUpperCase(Locale.ROOT)
-              + "."
-              + user.toUpperCase(Locale.ROOT);
-
-      MessageDigest digest = MessageDigest.getInstance("SHA-256");
-      var publicKeyFp =
-          "SHA256:" + Base64.getEncoder().encodeToString(digest.digest(publicKey.getEncoded()));
-
-      var issuedTs = new Date();
-      var expiresTs = new Date(issuedTs.getTime() + TimeUnit.HOURS.toMillis(1));
-      return JWT.create()
-          .withIssuer(qualifiedUserName + "." + publicKeyFp)
-          .withSubject(qualifiedUserName)
-          .withIssuedAt(issuedTs)
-          .withExpiresAt(expiresTs)
-          .sign(algorithm);
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to generate JWT", e);
-    }
-  }
-
-  /**
-   * Creates a RSA private key from a P8 file
-   *
-   * @param file a private key P8 file
-   * @return RSAPrivateCrtKey instance
-   * @throws Exception arises if any error occurs
-   */
-  private static RSAPrivateCrtKey readPrivateKey(File file) throws Exception {
-    String key = Files.readString(file.toPath(), Charset.defaultCharset());
-
-    String privateKeyPEM =
-        key.replace("-----BEGIN PRIVATE KEY-----", "") // pragma: allowlist secret
-            .replaceAll(System.lineSeparator(), "")
-            .replace("-----END PRIVATE KEY-----", "");
-
-    byte[] encoded = Base64.getDecoder().decode(privateKeyPEM);
-
-    KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-    PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encoded);
-    return (RSAPrivateCrtKey) keyFactory.generatePrivate(keySpec);
   }
 
 }

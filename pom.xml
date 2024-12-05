@@ -68,7 +68,7 @@
                 <generateBuilders>false</generateBuilders>
                 <apiPackage>snowflake.client.api</apiPackage>
                 <invokerPackage>snowflake.client</invokerPackage>
-                <modelPackage>snowflake.client.model</modelPackage>
+                <modelPackage>snowflake.client.model.database</modelPackage>
                 <useRuntimeException>true</useRuntimeException>
               </configOptions>
               <generateModelTests>false</generateModelTests>
@@ -95,7 +95,7 @@
                 <generateBuilders>false</generateBuilders>
                 <apiPackage>snowflake.client.api</apiPackage>
                 <invokerPackage>snowflake.client</invokerPackage>
-                <modelPackage>snowflake.client.model</modelPackage>
+                <modelPackage>snowflake.client.model.schema</modelPackage>
                 <useRuntimeException>true</useRuntimeException>
               </configOptions>
               <generateModelTests>false</generateModelTests>
@@ -123,7 +123,7 @@
                 <generateBuilders>false</generateBuilders>
                 <apiPackage>snowflake.client.api</apiPackage>
                 <invokerPackage>snowflake.client</invokerPackage>
-                <modelPackage>snowflake.client.model</modelPackage>
+                <modelPackage>snowflake.client.model.table</modelPackage>
                 <useRuntimeException>true</useRuntimeException>
               </configOptions>
               <generateModelTests>false</generateModelTests>
@@ -149,7 +149,7 @@
                 <generateBuilders>false</generateBuilders>
                 <apiPackage>snowflake.client.api</apiPackage>
                 <invokerPackage>snowflake.client</invokerPackage>
-                <modelPackage>snowflake.client.model</modelPackage>
+                <modelPackage>snowflake.client.model.view</modelPackage>
                 <useRuntimeException>true</useRuntimeException>
               </configOptions>
               <generateModelTests>false</generateModelTests>
@@ -157,7 +157,61 @@
             </configuration>
           </execution>
 
-<!--          <execution>-->
+          <execution>
+            <id>role-api</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>https://raw.githubusercontent.com/snowflakedb/snowflake-rest-api-specs/refs/heads/main/releases/8.40/specifications/role.yaml</inputSpec>
+              <generatorName>java</generatorName>
+              <library>apache-httpclient</library>
+              <configOptions>
+                <annotationLibrary>none</annotationLibrary>
+                <openApiNullable>false</openApiNullable>
+                <useJakartaEe>true</useJakartaEe>
+                <dateLibrary>java8</dateLibrary>
+                <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                <sourceFolder>src/gen/java/main</sourceFolder>
+                <generateBuilders>false</generateBuilders>
+                <apiPackage>snowflake.client.api</apiPackage>
+                <invokerPackage>snowflake.client</invokerPackage>
+                <modelPackage>snowflake.client.model.role</modelPackage>
+                <useRuntimeException>true</useRuntimeException>
+              </configOptions>
+              <generateModelTests>false</generateModelTests>
+              <generateApiTests>false</generateApiTests>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>user-api</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>https://raw.githubusercontent.com/snowflakedb/snowflake-rest-api-specs/refs/heads/main/releases/8.40/specifications/user.yaml</inputSpec>
+              <generatorName>java</generatorName>
+              <library>apache-httpclient</library>
+              <configOptions>
+                <annotationLibrary>none</annotationLibrary>
+                <openApiNullable>false</openApiNullable>
+                <useJakartaEe>true</useJakartaEe>
+                <dateLibrary>java8</dateLibrary>
+                <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                <sourceFolder>src/gen/java/main</sourceFolder>
+                <generateBuilders>false</generateBuilders>
+                <apiPackage>snowflake.client.api</apiPackage>
+                <invokerPackage>snowflake.client</invokerPackage>
+                <modelPackage>snowflake.client.model.user</modelPackage>
+                <useRuntimeException>true</useRuntimeException>
+              </configOptions>
+              <generateModelTests>false</generateModelTests>
+              <generateApiTests>false</generateApiTests>
+            </configuration>
+          </execution>
+
+          <!--          <execution>-->
 <!--            <id>all-api</id>-->
 <!--            <goals>-->
 <!--              <goal>generate</goal>-->
