@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
     <groupId>com.datamesh-manager</groupId>
-	<artifactId>datamesh-manager-agent-snowflake</artifactId>
+	<artifactId>datamesh-manager-connector-snowflake</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>datamesh-manager-agent-snowflake</name>
-	<description>Data Mesh Manager Agent for Snowflake Integration</description>
+	<name>datamesh-manager-connector-snowflake</name>
+	<description>Data Mesh Manager Connector for Snowflake Integration</description>
 
 	<dependencies>
 
@@ -27,7 +27,7 @@
 		<dependency>
 			<groupId>com.datamesh-manager</groupId>
 			<artifactId>datamesh-manager-sdk</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.3</version>
 		</dependency>
     <dependency>
       <groupId>com.auth0</groupId>

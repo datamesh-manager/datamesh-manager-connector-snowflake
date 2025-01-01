@@ -47,10 +47,10 @@ public class Application {
       SnowflakeProperties snowflakeProperties,
       ApiClient snowflakeApiClient,
       TaskExecutor taskExecutor) {
-    var agentId = snowflakeProperties.accessmanagement().agentid();
+    var connectorId = snowflakeProperties.accessmanagement().connectorid();
     var eventHandler = new SnowflakeAccessManagementHandler(client, snowflakeApiClient);
-    var stateRepository = new DataMeshManagerStateRepositoryRemote(agentId, client);
-    var dataMeshManagerEventListener = new DataMeshManagerEventListener(agentId, client, eventHandler, stateRepository);
+    var stateRepository = new DataMeshManagerStateRepositoryRemote(connectorId, client);
+    var dataMeshManagerEventListener = new DataMeshManagerEventListener(connectorId, "accessmanagement", client, eventHandler, stateRepository);
     taskExecutor.execute(dataMeshManagerEventListener::start);
     return dataMeshManagerEventListener;
   }
@@ -62,9 +62,9 @@ public class Application {
       DataMeshManagerClient client,
       ApiClient snowflakeApiClient,
       TaskExecutor taskExecutor) {
-    var agentId = snowflakeProperties.assets().agentid();
+    var connectorId = snowflakeProperties.assets().connectorid();
     var assetsProvider = new SnowflakeAssetsProvider(snowflakeProperties, snowflakeApiClient);
-    var dataMeshManagerAssetsSynchronizer = new DataMeshManagerAssetsSynchronizer(agentId, client, assetsProvider);
+    var dataMeshManagerAssetsSynchronizer = new DataMeshManagerAssetsSynchronizer(connectorId, client, assetsProvider);
     if (snowflakeProperties.assets().pollinterval() != null) {
       dataMeshManagerAssetsSynchronizer.setDelay(snowflakeProperties.assets().pollinterval());
     }

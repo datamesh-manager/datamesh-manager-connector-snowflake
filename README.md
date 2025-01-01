@@ -1,7 +1,7 @@
-Data Mesh Manager Agent for Snowflake
+Data Mesh Manager Connector for Snowflake
 ===
 
-The agent for snowflake is a Spring Boot application that uses the [datamesh-manager-sdk](https://github.com/datamesh-manager/datamesh-manager-sdk) internally, and is available as a ready-to-use Docker image [datameshmanager/datamesh-manager-agent-snowflake](https://hub.docker.com/repository/docker/datameshmanager/datamesh-manager-agent-snowflake) to be deployed in your environment.
+The connector for snowflake is a Spring Boot application that uses the [datamesh-manager-sdk](https://github.com/datamesh-manager/datamesh-manager-sdk) internally, and is available as a ready-to-use Docker image [datameshmanager/datamesh-manager-connector-snowflake](https://hub.docker.com/repository/docker/datameshmanager/datamesh-manager-connector-snowflake) to be deployed in your environment.
 
 ## Features
 
@@ -10,16 +10,16 @@ The agent for snowflake is a Spring Boot application that uses the [datamesh-man
 
 ## Usage
 
-Start the agent using Docker. You must pass the API keys as environment variables.
+Start the connector using Docker. You must pass the API keys as environment variables.
 
 ```
 docker run \
   -v ./rsa_key.p8:/rsa_key.p8:ro
   -e DATAMESHMANAGER_CLIENT_APIKEY='insert-api-key-here' \
   -e DATAMESHMANAGER_CLIENT_SNOWFLAKE_ACCOUNT='<your-organization>-<your-account>' \
-  -e DATAMESHMANAGER_CLIENT_SNOWFLAKE_USER='DATAMESHMANAGER_AGENT' \
+  -e DATAMESHMANAGER_CLIENT_SNOWFLAKE_USER='DATAMESHMANAGER_CONNECTOR' \
   -e DATAMESHMANAGER_CLIENT_SNOWFLAKE_PRIVATEKEYFILE='file:/rsa_key.p8' \
-  datameshmanager/datamesh-manager-agent-snowflake:latest
+  datameshmanager/datamesh-manager-connector-snowflake:latest
 ```
 
 ## Snowflake Setup
@@ -60,11 +60,11 @@ grant create role on account to role DATAMESHMANAGER;
 grant manage grants on account to role DATAMESHMANAGER;
 ```
 
-2. Create a new Snowflake user (e.g. `DATAMESHMANAGER_AGENT`) with role DATAMESHMANAGER.
+2. Create a new Snowflake user (e.g. `DATAMESHMANAGER_CONNECTOR`) with role DATAMESHMANAGER.
 
 ```
-create user DATAMESHMANAGER_AGENT display_name = 'Data Mesh Manager User' password='' default_role = DATAMESHMANAGER;
-grant role DATAMESHMANAGER to user DATAMESHMANAGER_AGENT;
+create user DATAMESHMANAGER_CONNECTOR display_name = 'Data Mesh Manager User' password='' default_role = DATAMESHMANAGER;
+grant role DATAMESHMANAGER to user DATAMESHMANAGER_CONNECTOR;
 
 ```
 
@@ -76,7 +76,7 @@ Omit the -----BEGIN PUBLIC KEY----- and -----END PUBLIC KEY----- lines and remov
 cat rsa_key.pub | grep -v "BEGIN\|END" | tr -d '\n'
 ```
 ```
-ALTER USER DATAMESHMANAGER_AGENT SET RSA_PUBLIC_KEY='MIIBIjANBgkqh...';
+ALTER USER DATAMESHMANAGER_CONNECTOR SET RSA_PUBLIC_KEY='MIIBIjANBgkqh...';
 ```
 
 ## Configuration
@@ -86,18 +86,18 @@ ALTER USER DATAMESHMANAGER_AGENT SET RSA_PUBLIC_KEY='MIIBIjANBgkqh...';
 | `DATAMESHMANAGER_CLIENT_HOST`                               | `https://api.datamesh-manager.com` | Base URL of the Data Mesh Manager API.                                        |
 | `DATAMESHMANAGER_CLIENT_APIKEY`                             |                                    | API key for authenticating requests to the Data Mesh Manager.                 |
 | `DATAMESHMANAGER_CLIENT_SNOWFLAKE_ACCOUT`                   |                                    | Snowflake account host URL in the form of `ORGANIZATION-ACCOUNT`.             |
-| `DATAMESHMANAGER_CLIENT_SNOWFLAKE_USER`                     |                                    | The Snowflake user name as created abovem e.g. `DATAMESHMANAGER_AGENT`.       |
+| `DATAMESHMANAGER_CLIENT_SNOWFLAKE_USER`                     |                                    | The Snowflake user name as created abovem e.g. `DATAMESHMANAGER_CONNECTOR`.       |
 | `DATAMESHMANAGER_CLIENT_SNOWFLAKE_PRIVATEKEYFILE`           |                                    | The file path to the private key, as created above. In form `file:rsa_key.p8` |
-| `DATAMESHMANAGER_CLIENT_SNOWFLAKE_ACCESSMANAGEMENT_AGENTID` | `snowflake-access-management`      | Identifier for the Snowflake access management agent.                         |
+| `DATAMESHMANAGER_CLIENT_SNOWFLAKE_ACCESSMANAGEMENT_CONNECTORID` | `snowflake-access-management`      | Identifier for the Snowflake access management connector.                         |
 | `DATAMESHMANAGER_CLIENT_SNOWFLAKE_ACCESSMANAGEMENT_ENABLED` | `true`                             | Indicates whether Snowflake access management is enabled.                     |
-| `DATAMESHMANAGER_CLIENT_SNOWFLAKE_ASSETS_AGENTID`           | `snowflake-assets`                 | Identifier for the Snowflake assets agent.                                    |
+| `DATAMESHMANAGER_CLIENT_SNOWFLAKE_ASSETS_CONNECTORID`           | `snowflake-assets`                 | Identifier for the Snowflake assets connector.                                    |
 | `DATAMESHMANAGER_CLIENT_SNOWFLAKE_ASSETS_ENABLED`           | `true`                             | Indicates whether Snowflake asset tracking is enabled.                        |
 | `DATAMESHMANAGER_CLIENT_SNOWFLAKE_ASSETS_POLLINTERVAL`      | `PT10M`                            | Polling interval for Snowflake asset updates, in ISO 8601 duration format.    |
 
 
 ## Access Management Flow
 
-When an Access Request has been approved by the data product owner, and the start date is reached, Data Mesh Manager will publish an `AccessActivatedEvent`. When an end date is defined and reached, Data Mesh Manager will publish an `AccessDeactivatedEvent`. The agent listens for these events and grants access to the data consumer in Snowflake.
+When an Access Request has been approved by the data product owner, and the start date is reached, Data Mesh Manager will publish an `AccessActivatedEvent`. When an end date is defined and reached, Data Mesh Manager will publish an `AccessDeactivatedEvent`. The connector listens for these events and grants access to the data consumer in Snowflake.
 
 ### Consumer Type: Data Product
 
@@ -125,7 +125,7 @@ The role names will be derived from the ID with a resource-type prefix. If a cus
   - `grant role` to team members
 
 
-Agent Actions on `AccessDeactivatedEvent`:
+Connector Actions on `AccessDeactivatedEvent`:
 
 - Delete the role `access_a_100`
 
@@ -143,7 +143,7 @@ Snowflake roles that will be created (if not exists) on `AccessActivatedEvent`:
 
 The role names will be derived from the ID with a resource-type prefix. If a custom field `snowflakeRole` is defined on the resource in Data Mesh Manager, the value will be used as the role name instead of the ID.
 
-Agent Actions on `AccessActivatedEvent`:
+Connector Actions on `AccessActivatedEvent`:
 
 - `access_a_101`
   - `grant USE SCHEMA my_database.schema_220`
@@ -152,7 +152,7 @@ Agent Actions on `AccessActivatedEvent`:
 - `team-t-400`
   - `grant role access_a_101`
 
-Agent Actions on `AccessDeactivatedEvent`:
+Connector Actions on `AccessDeactivatedEvent`:
 
 - Delete the group `access_a_101`
 
@@ -166,7 +166,7 @@ Example:
 - Consumer is an individual user with email address `alice@example.com` (Snowflake username alice).
 - Access ID is `a-102`.
 
-Agent Actions on `AccessActivatedEvent`:
+Connector Actions on `AccessActivatedEvent`:
 
 - `access_a_102`
   - `grant USE SCHEMA my_database.schema_220`
@@ -175,7 +175,7 @@ Agent Actions on `AccessActivatedEvent`:
 - `grant role access_a_102 to user alice`
 
 
-Agent Actions on `AccessDeactivatedEvent`:
+Connector Actions on `AccessDeactivatedEvent`:
 
 - Delete the group `access_a_102`
 

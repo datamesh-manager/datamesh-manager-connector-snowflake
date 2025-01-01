@@ -51,7 +51,7 @@ jobs:
           context: .
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: datameshmanager/datamesh-manager-agent-snowflake:latest
+          tags: datameshmanager/datamesh-manager-connector-snowflake:latest
           sbom: true
           cache-from: type=gha
           cache-to: type=gha,mode=max

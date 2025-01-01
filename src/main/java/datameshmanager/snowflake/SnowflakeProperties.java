@@ -15,7 +15,7 @@ public record SnowflakeProperties(
 
   public record AssetsProperties(
       Boolean enabled,
-      String agentid,
+      String connectorid,
       Duration pollinterval
   ) {
 
@@ -23,7 +23,7 @@ public record SnowflakeProperties(
 
   public record AccessmanagementProperties(
       Boolean enabled,
-      String agentid
+      String connectorid
   ) {
 
   }
