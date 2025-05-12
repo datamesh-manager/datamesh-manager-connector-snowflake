@@ -55,7 +55,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>https://raw.githubusercontent.com/snowflakedb/snowflake-rest-api-specs/refs/heads/main/specifications/database.yaml</inputSpec>
+              <inputSpec>https://raw.githubusercontent.com/snowflakedb/snowflake-rest-api-specs/refs/tags/9.8/specifications/database.yaml</inputSpec>
               <generatorName>java</generatorName>
               <library>apache-httpclient</library>
               <configOptions>
@@ -82,7 +82,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>https://raw.githubusercontent.com/snowflakedb/snowflake-rest-api-specs/refs/heads/main/specifications/schema.yaml</inputSpec>
+              <inputSpec>https://raw.githubusercontent.com/snowflakedb/snowflake-rest-api-specs/refs/tags/9.8/specifications/schema.yaml</inputSpec>
               <generatorName>java</generatorName>
               <library>apache-httpclient</library>
               <configOptions>
@@ -110,7 +110,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>https://raw.githubusercontent.com/snowflakedb/snowflake-rest-api-specs/refs/heads/main/specifications/table.yaml</inputSpec>
+              <inputSpec>https://raw.githubusercontent.com/snowflakedb/snowflake-rest-api-specs/refs/tags/9.8/specifications/table.yaml</inputSpec>
               <generatorName>java</generatorName>
               <library>apache-httpclient</library>
               <configOptions>
@@ -136,7 +136,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>https://raw.githubusercontent.com/snowflakedb/snowflake-rest-api-specs/refs/heads/main/specifications/view.yaml</inputSpec>
+              <inputSpec>https://raw.githubusercontent.com/snowflakedb/snowflake-rest-api-specs/refs/tags/9.8/specifications/view.yaml</inputSpec>
               <generatorName>java</generatorName>
               <library>apache-httpclient</library>
               <configOptions>
@@ -163,7 +163,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>https://raw.githubusercontent.com/snowflakedb/snowflake-rest-api-specs/refs/heads/main/specifications/role.yaml</inputSpec>
+              <inputSpec>https://raw.githubusercontent.com/snowflakedb/snowflake-rest-api-specs/refs/tags/9.8/specifications/role.yaml</inputSpec>
               <generatorName>java</generatorName>
               <library>apache-httpclient</library>
               <configOptions>
@@ -190,7 +190,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>https://raw.githubusercontent.com/snowflakedb/snowflake-rest-api-specs/refs/heads/main/specifications/user.yaml</inputSpec>
+              <inputSpec>https://raw.githubusercontent.com/snowflakedb/snowflake-rest-api-specs/refs/tags/9.8/specifications/user.yaml</inputSpec>
               <generatorName>java</generatorName>
               <library>apache-httpclient</library>
               <configOptions>
@@ -217,7 +217,7 @@
 <!--              <goal>generate</goal>-->
 <!--            </goals>-->
 <!--            <configuration>-->
-<!--&lt;!&ndash;              <inputSpec>https://raw.githubusercontent.com/snowflakedb/snowflake-rest-api-specs/refs/heads/main/specifications/schema.yaml</inputSpec>&ndash;&gt;-->
+<!--&lt;!&ndash;              <inputSpec>https://raw.githubusercontent.com/snowflakedb/snowflake-rest-api-specs/refs/tags/9.8/specifications/schema.yaml</inputSpec>&ndash;&gt;-->
 <!--                            <inputSpecRootDirectory>src/main/openapi</inputSpecRootDirectory>-->
 <!--              <generatorName>java</generatorName>-->
 <!--              <library>apache-httpclient</library>-->
